@@ -1,6 +1,7 @@
 # webapps-all.yaml
----
+
 # 1) Namespaces
+---
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -11,8 +12,8 @@ kind: Namespace
 metadata:
   name: webapp2
 
----
 # 2) webapp1 (in namespace webapp1)
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,11 +31,13 @@ spec:
       labels:
         app: webapp1
     spec:
+      nodeSelector:
+        agentpool: "userpool01"
       containers:
-        - name: echoserver
-          image: gcr.io/google_containers/echoserver:1.10
-          ports:
-            - containerPort: 8080
+      - name: echoserver
+        image: gcr.io/google_containers/echoserver:1.10
+        ports:
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -46,8 +49,8 @@ spec:
   selector:
     app: webapp1
   ports:
-    - port: 80
-      targetPort: 8080
+  - port: 80
+    targetPort: 8080
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -58,19 +61,19 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-    - host: webapp1.yourdomain.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: webapp1-service
-                port:
-                  number: 80
+  - host: webapp1.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: webapp1-service
+            port:
+              number: 80
 
----
 # 3) webapp2 (in namespace webapp2)
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -88,11 +91,13 @@ spec:
       labels:
         app: webapp2
     spec:
+      nodeSelector:
+        agentpool: "userpool01"
       containers:
-        - name: echoserver
-          image: gcr.io/google_containers/echoserver:1.10
-          ports:
-            - containerPort: 8080
+      - name: echoserver
+        image: gcr.io/google_containers/echoserver:1.10
+        ports:
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -104,8 +109,8 @@ spec:
   selector:
     app: webapp2
   ports:
-    - port: 80
-      targetPort: 8080
+  - port: 80
+    targetPort: 8080
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -116,13 +121,13 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-    - host: webapp2.yourdomain.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: webapp2-service
-                port:
-                  number: 80
+  - host: webapp2.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: webapp2-service
+            port:
+              number: 80
